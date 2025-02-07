@@ -12,7 +12,6 @@ const toursSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, "A tour name must have less or equal then 40 characters"],
       minlength: [10, "A tour name must have more or equal then 10 characters"],
-      // validate: [validator.isAlpha, "Tour name must only contain characters"],
     },
     slug: String,
     duration: {
@@ -36,6 +35,7 @@ const toursSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, "Rating must be above 1.0"],
       max: [5, "Rating must be below 5.0"],
+      set: (val) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: {
       type: Number,
@@ -116,6 +116,11 @@ const toursSchema = new mongoose.Schema(
   },
 );
 
+// toursSchema.index({ price: 1 });
+toursSchema.index({ price: 1, ratingsAverage: -1 });
+toursSchema.index({ slug: 1 });
+toursSchema.index({ startLocation: "2dsphere" });
+
 toursSchema.virtual("durationWeeks").get(function () {
   return this.duration / 7;
 });
@@ -162,11 +167,11 @@ toursSchema.pre(/^find/, function (next) {
   this.start = Date.now();
   next();
 });
-toursSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  console.log(this.pipeline());
-  next();
-});
+// toursSchema.pre("aggregate", function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline());
+//   next();
+// });
 
 toursSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds`);
