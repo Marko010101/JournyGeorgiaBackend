@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
@@ -5,6 +6,7 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
+const viewRouter = require("./routes/viewRoutes.js");
 
 const AppError = require("./utils/appError.js");
 const globalErrorHandler = require("./controllers/errorController.js");
@@ -14,7 +16,14 @@ const reviewRouter = require("./routes/reviewRoutes.js");
 
 const app = express();
 
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
+
 // 1) Global middlewares
+
+// Serving static files
+app.use(express.static(path.join(__dirname, "public")));
+
 // Set Security HTTP headers
 app.use(helmet());
 
@@ -27,7 +36,7 @@ if (process.env.NODE_ENV === "development") {
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
-  message: "Too manu requests from this IP, please try again in an hour!",
+  message: "Too many requests from this IP, please try again in an hour!",
 });
 app.use("/api", limiter);
 
@@ -54,14 +63,21 @@ app.use(
   }),
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "script-src 'self' https://unpkg.com blob:; worker-src 'self' blob:;",
+  );
+  next();
+});
 
 // Test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
+
+app.use("/", viewRouter);
 
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
