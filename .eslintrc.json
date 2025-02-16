@@ -12,7 +12,7 @@
   "rules": {
     "prettier/prettier": [
       "error",
-      { "endOfLine": "auto", "singleQuote": false }
+      { "endOfLine": "auto", "singleQuote": false, "printWidth": 120 }
     ],
     "quotes": ["error", "double"],
     "spaced-comment": "off",
