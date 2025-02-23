@@ -8,7 +8,7 @@ const router = express.Router();
 //routes for templates and pages
 router.get(
   "/",
-  bookingController.createBookingCheckout,
+  // bookingController.webhookCheckout,
   authController.isLoggedIn,
   viewController.getOverview,
 );
