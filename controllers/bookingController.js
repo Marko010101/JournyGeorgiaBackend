@@ -26,13 +26,15 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         price_data: {
           currency: "usd",
           product_data: {
-            name: `${tour.name} Tour`, // Name of the product (tour)
-            description: tour.summary, // Tour summary as the product description
-            images: [`https://natours.dev/img/tours/${tour.imageCover}`], // Image URL
+            name: `${tour.name} Tour`,
+            description: tour.summary,
+            images: [
+              `${req.protocol}://${req.get("host")}/img/tours/${tour.imageCover}`,
+            ],
           },
-          unit_amount: tour.price * 100, // Stripe expects amount in the smallest unit (cents for USD)
+          unit_amount: tour.price * 100,
         },
-        quantity: 1, // Quantity of the tour
+        quantity: 1,
       },
     ],
   });
