@@ -3,7 +3,7 @@ import { login, logout } from "./login.js";
 import { displayMap } from "./maplibre.js";
 import { updateSettings } from "./updateSettings.js";
 import { bookTour } from "./stripe.js";
-
+import { showAlert } from "./alert.js";
 //  DOM ELEMENTS
 const mapLibre = document.getElementById("map");
 const loginForm = document.querySelector(".form--login");
@@ -68,3 +68,7 @@ if (bookBtn)
     const { tourId } = e.target.dataset;
     bookTour(tourId);
   });
+
+const alertMessage = document.querySelector("body").dataset.alert;
+
+if (alert) showAlert("success", alertMessage, 7);
