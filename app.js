@@ -8,6 +8,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
 const compression = require("compression");
+const cors = require("cors");
 
 const AppError = require("./utils/appError.js");
 const globalErrorHandler = require("./controllers/errorController.js");
@@ -24,7 +25,17 @@ app.enable("trust proxy");
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
+// Access-Control-Allow-Origin *
+app.use(cors());
+
 // 1) Global middlewares
+
+// Allow app to use api
+// app.use(cors({
+//   origin:"https:journygeorgia.netlify.com"
+// }))
+
+app.options("*", cors());
 
 // Serving static files
 app.use(express.static(path.join(__dirname, "public")));
